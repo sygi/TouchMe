@@ -11,7 +11,8 @@
 	<View
 	    android:id="@+id/layout"
 	    android:layout_width="fill_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@drawable/silver_dragon" />
 
     <TextView
         android:id="@+id/textview"

@@ -19,6 +19,7 @@ public class Server {
 	ServerSocket ss;
 	Robot robot;
 	Double lastX, lastY;
+
 	public Server(ServerSocket serverS) {
 		ss = serverS;
 		try {
@@ -45,46 +46,50 @@ public class Server {
 			System.exit(-1);
 		}
 	}
-	private Double getX(String command){
+
+	private Double getX(String command) {
 		String pos[] = command.split("[xy]:");
 		return Double.valueOf(pos[1]);
 	}
-	private Double getY(String command){
+
+	private Double getY(String command) {
 		String pos[] = command.split("[xy]:");
 		return Double.valueOf(pos[2]);
 	}
-	private void serve(String command){
-		if (command.matches("down.*")){
+
+	private void serve(String command) {
+		if (command.matches("down.*")) {
 			System.out.printf("Pressed down\n");
 			lastX = getX(command);
 			lastY = getY(command);
-		} else if (command.matches("move.*")){
+		} else if (command.matches("move.*")) {
 			System.out.printf("moving\n");
 			Point actual = MouseInfo.getPointerInfo().getLocation();
-			robot.mouseMove(actual.x - 4 * (int)(getY(command) - lastY), 
-					actual.y + 4 * (int)((getX(command) - lastX)));
+			robot.mouseMove(actual.x + (int) (4.0 * getY(command)), actual.y
+					- (int) (4.0 * getX(command)));
 			lastX = getX(command);
 			lastY = getY(command);
-		} else if (command.equals("click")){
+		} else if (command.equals("click")) {
 			robot.mousePress(InputEvent.BUTTON1_MASK);
-	        robot.mouseRelease(InputEvent.BUTTON1_MASK);
-		} else if (command.equals("connected")){
+			robot.mouseRelease(InputEvent.BUTTON1_MASK);
+		} else if (command.equals("connected")) {
 			out.println("ok");
-		} else if (command.equals("disconnect")){
+		} else if (command.equals("disconnect")) {
 			System.out.printf("Client disconnected, waiting for another one\n");
 		} else {
 			System.out.printf("Unknown command: %s\n", command);
 		}
 	}
+
 	public void listen() {
 		System.out.printf("Waiting for messages\n");
 		String msg;
 		try {
-		while((msg = in.readLine()) != null) {
-			System.out.printf("get: %s\n", msg);
-			serve(msg);
-		} 
-		} catch (IOException e){
+			while ((msg = in.readLine()) != null) {
+				System.out.printf("get: %s\n", msg);
+				serve(msg);
+			}
+		} catch (IOException e) {
 		}
 		System.out.printf("client disconnected\n");
 		estabilishConnection();
