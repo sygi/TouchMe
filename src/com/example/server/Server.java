@@ -39,8 +39,7 @@ public class Server {
 		}
 		try {
 			out = new PrintWriter(client.getOutputStream(), true); // autoFlush
-			in = new BufferedReader(new InputStreamReader(
-					client.getInputStream()));
+			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		} catch (IOException e) {
 			System.out.printf("Error connecting to socket in/out streams\n");
 			System.exit(-1);
@@ -65,8 +64,7 @@ public class Server {
 		} else if (command.matches("move.*")) {
 			System.out.printf("moving\n");
 			Point actual = MouseInfo.getPointerInfo().getLocation();
-			robot.mouseMove(actual.x + (int) (4.0 * getY(command)), actual.y
-					- (int) (4.0 * getX(command)));
+			robot.mouseMove(actual.x + (int) (6.0 * getY(command)), actual.y - (int) (6.0 * getX(command)));
 			lastX = getX(command);
 			lastY = getY(command);
 		} else if (command.equals("click")) {
@@ -84,10 +82,21 @@ public class Server {
 	public void listen() {
 		System.out.printf("Waiting for messages\n");
 		String msg;
+		String lastMsg = "";
+		long whenLast = System.currentTimeMillis(), whenAct;
 		try {
 			while ((msg = in.readLine()) != null) {
 				System.out.printf("get: %s\n", msg);
-				serve(msg);
+				whenAct = System.currentTimeMillis();
+				if (!msg.equals("up") && !lastMsg.equals("") && !lastMsg.equals("up") && whenAct - whenLast > 10)
+					serve(lastMsg);
+				if (msg.equals("click")) {
+					serve(msg);
+					msg = "";
+				}
+				System.out.printf("Time diffr: %d\n", whenAct - whenLast);
+				lastMsg = msg;
+				whenLast = whenAct;
 			}
 		} catch (IOException e) {
 		}

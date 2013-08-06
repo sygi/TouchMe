@@ -34,8 +34,7 @@ public class MainActivity extends Activity {
 			return;
 		}
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK
-				| PowerManager.ON_AFTER_RELEASE, "sygi");
+		mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "sygi");
 		view.requestFocus();
 		setListening();
 		view.setFocusable(true);
@@ -66,13 +65,18 @@ public class MainActivity extends Activity {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
+
 				if (myDetector.onTouchEvent(event))
 					return true;
 				// connect.send("move x: " + event.getX() + " y: " +
 				// event.getY());
-				text.setText("x: " + (event.getX() - startX) + " y: "
-						+ (event.getY() - startY));
+				text.setText("x: " + (event.getX() - startX) + " y: " + (event.getY() - startY));
 				view.invalidate();
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					connect.send("up");
+					Log.d("sygi", "up");
+					return true;
+				}
 				return true;
 			}
 		});
@@ -90,8 +94,7 @@ public class MainActivity extends Activity {
 
 		@Override
 		// TODO Auto-generated method stub
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			return false;
 		}
 
@@ -102,10 +105,9 @@ public class MainActivity extends Activity {
 		}
 
 		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 			Log.d("sygi", "onScroll");
-			if (Math.max(Math.abs(distanceX), Math.abs(distanceY)) < 0.1)
+			if (Math.max(Math.abs(distanceX), Math.abs(distanceY)) < 0.01)
 				return false;
 			connect.send("move x: " + distanceX + " y: " + distanceY);
 			return true;
